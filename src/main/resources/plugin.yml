@@ -1,0 +1,6 @@
+name: ${name}
+version: ${version}
+main: org.equinoxprojects.voidchest.VoidChestPlugin
+description: ${description}
+author: Evisual
+api-version: 1.13
