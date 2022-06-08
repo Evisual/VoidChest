@@ -8,7 +8,7 @@
     <artifactId>VoidChest</artifactId>
     <version>0.0.1-DEVELOPMENT</version>
     <name>VoidChest</name>
-    <description>A plugin that automatically sells your loot</description>
+    <description>A chest that automatically sells your loot</description>
 
     <developers>
         <developer>
