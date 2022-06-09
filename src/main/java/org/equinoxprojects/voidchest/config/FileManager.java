@@ -3,9 +3,10 @@ package org.equinoxprojects.voidchest.config;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
+
 public class FileManager
 {
-
     private static FileManager instance;
 
     public static FileManager getInstance()
@@ -19,6 +20,5 @@ public class FileManager
     {
         chestsConfig = new Config(plugin, "chests.yml");
     }
-
 
 }

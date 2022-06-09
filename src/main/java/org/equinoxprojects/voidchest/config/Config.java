@@ -1,5 +1,6 @@
 package org.equinoxprojects.voidchest.config;
 
+import lombok.Getter;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,20 +12,22 @@ import java.io.IOException;
 public class Config
 {
     private final JavaPlugin plugin;
-    private final File file;
-    private final FileConfiguration config;
+    private final @Getter File file;
+    private final @Getter FileConfiguration config;
 
     public Config(final JavaPlugin plugin, final String file)
     {
         this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), file);
         this.config = YamlConfiguration.loadConfiguration(this.file);
+
+        if(createFile()) return;
+        save();
     }
 
     public void save()
     {
-        try
-        {
+        try {
             config.save(file);
         } catch(IOException e)
         {
@@ -34,14 +37,25 @@ public class Config
 
     public void reload()
     {
-        try
-        {
+        try {
             config.load(file);
         } catch(IOException | InvalidConfigurationException e)
         {
             e.printStackTrace();
         }
     }
+
+    private boolean createFile()
+    {
+        try {
+            return file.createNewFile();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
 
 
 
