@@ -4,3 +4,8 @@ main: org.equinoxprojects.voidchest.VoidChestPlugin
 description: ${description}
 author: Evisual
 api-version: 1.13
+
+commands:
+  void:
+    description: Main command for VoidChest
+    usage: void.command.void.give
