@@ -11,6 +11,7 @@ import org.equinoxprojects.voidchest.commands.exceptions.NoPermissionsException;
 import org.equinoxprojects.voidchest.commands.exceptions.NotEnoughArgumentsException;
 import org.equinoxprojects.voidchest.commands.exceptions.UnknownCommandException;
 import org.equinoxprojects.voidchest.commands.subcommands.VoidGiveCommand;
+import org.equinoxprojects.voidchest.commands.subcommands.VoidHelpCommand;
 import org.equinoxprojects.voidchest.config.FileManager;
 import org.equinoxprojects.voidchest.economy.EconomyManager;
 import org.equinoxprojects.voidchest.util.Utils;
@@ -47,6 +48,7 @@ public class VoidChestPlugin extends JavaPlugin
     public void registerCommands()
     {
         commandHandler.registerCommand(new VoidGiveCommand());
+        commandHandler.registerCommand(new VoidHelpCommand());
     }
 
     @Override
