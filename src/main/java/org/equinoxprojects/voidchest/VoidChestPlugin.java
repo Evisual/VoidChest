@@ -1,10 +1,12 @@
 package org.equinoxprojects.voidchest;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.equinoxprojects.voidchest.chest.handlers.ChestPlaceHandler;
 import org.equinoxprojects.voidchest.commands.AlternativeCommandHandler;
 import org.equinoxprojects.voidchest.commands.IVoidCommand;
 import org.equinoxprojects.voidchest.commands.exceptions.NoPermissionsException;
@@ -43,6 +45,7 @@ public class VoidChestPlugin extends JavaPlugin
         economy = new EconomyManager(plugin);
 
         registerCommands();
+        registerListeners();
     }
 
     public void registerCommands()
@@ -50,6 +53,12 @@ public class VoidChestPlugin extends JavaPlugin
         commandHandler.registerCommand(new VoidGiveCommand());
         commandHandler.registerCommand(new VoidHelpCommand());
     }
+
+    public void registerListeners()
+    {
+        Bukkit.getPluginManager().registerEvents(new ChestPlaceHandler(), this);
+    }
+
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)

@@ -1,29 +1,80 @@
 package org.equinoxprojects.voidchest.chest;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.equinoxprojects.voidchest.config.FileManager;
+import org.equinoxprojects.voidchest.util.NBTEditor;
 import org.equinoxprojects.voidchest.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class VoidChest
 {
-    private final Location loc;
-    private int moneyMade = 0;
-    private int itemsSold = 0;
-    private int itemsPurged = 0;
+    private final @Getter Location loc;
+    private @Getter int moneyMade = 0;
+    private @Getter int itemsSold = 0;
+    private @Getter int itemsPurged = 0;
+    private final UUID owner;
 
-    public VoidChest(Location loc)
+    public void setMoneyMade(int amount)
+    {
+        moneyMade = amount;
+        update();
+    }
+
+    public void setItemsSold(int amount)
+    {
+        itemsSold = amount;
+        update();
+    }
+
+    public void setItemsPurged(int amount)
+    {
+        itemsPurged = amount;
+        update();
+    }
+
+    public VoidChest(final Location loc, final UUID owner)
     {
         this.loc = loc;
+        this.owner = owner;
+
+        if(loc == null || owner == null) return;
+
+        update();
+    }
+
+    private void update()
+    {
+        FileConfiguration config = FileManager.getInstance().getChestsConfig().getConfig();
+
+        int chestsNum = config.getInt("chests." + owner.toString() + "numofchests");
+        chestsNum++;
+        config.set("chests." + owner + ".numofchests", chestsNum);
+
+        String basePath = "chests." + owner + "." + chestsNum;
+
+        config.set(basePath + ".location.x", loc.getBlockX());
+        config.set(basePath + ".location.y", loc.getBlockX());
+        config.set(basePath + ".location.z", loc.getBlockX());
+        config.set(basePath + ".location.world", loc.getWorld().getName());
+
+        config.set(basePath + "." + "moneymade", 0);
+        config.set(basePath + "." + "itemssold", 0);
+        config.set(basePath + "." + "itemspurged", 0);
+
+        FileManager.getInstance().getChestsConfig().save();
     }
 
     public ItemStack getItem(Player p, boolean usePlayer)
@@ -53,6 +104,8 @@ public class VoidChest
         item.setItemMeta(meta);
         item.addUnsafeEnchantment(Enchantment.DURABILITY, 10);
 
+        item = NBTEditor.set(item, "true", "voidchest");
+
         return item;
     }
 
@@ -63,14 +116,41 @@ public class VoidChest
 
     public static ItemStack getDefaultItem(Player p)
     {
-        VoidChest chest = new VoidChest(null);
+        VoidChest chest = new VoidChest(null, null);
         return chest.getItem(p, true);
     }
 
     public static ItemStack getDefaultItem()
     {
-        VoidChest chest = new VoidChest(null);
+        VoidChest chest = new VoidChest(null, null);
         return chest.getItem();
+    }
+
+    public static VoidChest getChest(Location loc)
+    {
+        FileConfiguration config = FileManager.getInstance().getChestsConfig().getConfig();
+
+        for(String owner : config.getConfigurationSection("chests").getKeys(false))
+        {
+            for(String str : config.getConfigurationSection("chests." + owner).getKeys(false))
+            {
+                final String basePath = "chests." + owner + "." + str;
+                if(config.getString(".location.world").equals(loc.getWorld().getName())) continue;
+                if(config.getInt(basePath + ".location.x") != loc.getBlockX()) continue;
+                if(config.getInt(basePath + ".location.y") != loc.getBlockY()) continue;
+                if(config.getInt(basePath + ".location.z") != loc.getBlockZ()) continue;
+
+                VoidChest chest = new VoidChest(new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), UUID.fromString(owner));
+                chest.setMoneyMade(config.getInt(basePath + ".moneymade"));
+                chest.setItemsSold(config.getInt(basePath + ".itemssold"));
+                chest.setItemsPurged(config.getInt(basePath + ".itemspurged"));
+
+                return chest;
+            }
+
+        }
+
+        return null;
     }
 
 }
